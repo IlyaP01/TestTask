@@ -62,6 +62,8 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(TestTask)
 endif()
 
+#TESTS
+
 set (gtest_force_shared_crt ON CACHE BOOL "MSVC defaults to shared CRT" FORCE)
 add_subdirectory(googletest)
 target_compile_definitions(gtest
@@ -69,14 +71,16 @@ target_compile_definitions(gtest
     GTEST_LANG_CXX17
     GTEST_HAS_TR1_TUPLE=0
 )
+
+set (TEST_SOURCES tests/figuretest.cpp src/Figure/figure.cpp src/Figure/Point/point.cpp) 
 add_executable(tests)
 target_sources(tests
   PRIVATE
-    tests/figuretest.cpp
+    ${TEST_SOURCES}
 )
 
 set_target_properties(tests PROPERTIES COMPILE_FLAGS "${cxx_strict}")
 target_link_libraries(tests gtest_main Qt${QT_VERSION_MAJOR}::Widgets)
 enable_testing()
 include(GoogleTest)
-gtest_add_tests(TARGET tests SOURCES tests/figuretest.cpp)
+gtest_add_tests(TARGET tests SOURCES ${TEST_SOURCES})
