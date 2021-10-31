@@ -80,7 +80,7 @@ target_sources(tests
 )
 
 set_target_properties(tests PROPERTIES COMPILE_FLAGS "${cxx_strict}")
-target_link_libraries(tests gtest_main Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(tests gtest_main Qt${QT_VERSION_MAJOR}::Core)
 enable_testing()
 include(GoogleTest)
 gtest_add_tests(TARGET tests SOURCES ${TEST_SOURCES})
