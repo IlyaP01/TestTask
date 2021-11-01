@@ -49,6 +49,16 @@ static inline bool _checkIfBetween(const Point& p1, const Point& p2, const Point
     return (p3.x - p2.x) * (p2.x - p1.x) >= 0 - err && (p3.y - p2.y) * (p2.y - p1.y) >= 0 - err;
 }
 
+/**
+ * Check if figure can be built without the second point
+ * @param[in]  p1 the first point
+ * @param[in]  p2 the second point
+ * @param[in]  p3 the third point
+ * @return result of checking
+ * @see _checkIfOnLine
+ * @see _checkIfBetween
+ */
+
 static bool _checkIfNeedless(const Point& p1, const Point& p2, const Point& p3) {
     return _checkIfOnLine(p1, p2, p3) && _checkIfBetween(p1, p2, p3);
 }
