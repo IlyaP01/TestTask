@@ -20,7 +20,6 @@ FigureFrame::FigureFrame(const Figure* figure) : figure(figure)  {
 void FigureFrame::DrawLastPoint() {
     fullRedraw = false;
     update();
-    fullRedraw = true;
 }
 
 void FigureFrame::FullRedraw() {

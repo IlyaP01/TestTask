@@ -107,23 +107,7 @@ void MainWindow::on_addButton_clicked() {
         auto err = figure.AddPoint(str);
         if (err == Figure::Error::NO_ERROR) {
             auto points = figure.GetPoints();
-            if (prevSize == points.size()) {
-                ui->pointsBrowser->moveCursor(QTextCursor::End);
-                ui->pointsBrowser->moveCursor(QTextCursor::Left, QTextCursor::KeepAnchor);
-                ui->pointsBrowser->moveCursor(QTextCursor::WordLeft, QTextCursor::KeepAnchor);
-                ui->pointsBrowser->moveCursor(QTextCursor::Left, QTextCursor::KeepAnchor);
-                ui->pointsBrowser->moveCursor(QTextCursor::Left, QTextCursor::KeepAnchor);
-                ui->pointsBrowser->moveCursor(QTextCursor::WordLeft, QTextCursor::KeepAnchor);
-                ui->pointsBrowser->moveCursor(QTextCursor::Left, QTextCursor::KeepAnchor);
-                ui->pointsBrowser->textCursor().removeSelectedText();
-                // ..., (x,y), (a, b)
-            }
-            else {
-                ui->pointsBrowser->moveCursor(QTextCursor::End);
-                if (points.size() > 1)
-                    ui->pointsBrowser->insertPlainText(", ");
-            }
-            ui->pointsBrowser->insertPlainText(QString("(%1, %2)").arg(points.back().x).arg(points.back().y));
+            UpdateWidgets();
             figureFrame.DrawLastPoint();
         }
         else {
