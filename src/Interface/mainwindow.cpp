@@ -15,6 +15,7 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), figureFrame(&figure) {
     ui->setupUi(this);
+    figureFrame.FullRedraw();
 }
 
 MainWindow::~MainWindow() {
@@ -22,20 +23,18 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::UpdateWidgets() noexcept {
+    auto points = figure.GetPoints();
+
     QString strNumOfPoints;
-    strNumOfPoints.setNum(figure.GetPoints().size());
+    strNumOfPoints.setNum(points.size());
     ui->numOfPointsBrowser->setText(strNumOfPoints);
 
-    ui->pointsBrowser->clear();
-    auto points = figure.GetPoints();
-    ui->pointsBrowser->moveCursor(QTextCursor::End);
+    QString strPoints;
     for (size_t i = 0; !points.empty() && i < points.size() - 1; ++i) {
-        ui->pointsBrowser->insertPlainText(QString("(%1, %2), ").arg(points[i].x).arg(points[i].y));
+        strPoints += QString("(%1, %2), ").arg(points[i].x).arg(points[i].y);
     }
-    ui->pointsBrowser->insertPlainText(QString("(%1, %2)").arg(points.back().x).arg(points.back().y));
-
-
-    figureFrame.update();
+    strPoints += (QString("(%1, %2)").arg(points.back().x).arg(points.back().y));
+    ui->pointsBrowser->setText(strPoints);
 }
 
 static void _handleError(Figure::Error error) {
@@ -71,6 +70,7 @@ void MainWindow::on_actionOpen_triggered() {
     auto err = figure.ReadFromFile(fileName);
     if (err == Figure::Error::NO_ERROR) {
         UpdateWidgets();
+        figureFrame.FullRedraw();
     }
     else {
         ui->pointsBrowser->clear();
@@ -95,7 +95,6 @@ void MainWindow::on_actionExit_triggered() {
 }
 
 void MainWindow::on_showButton_clicked() {
-    figureFrame.update();
     figureFrame.show();
 }
 
@@ -104,9 +103,28 @@ void MainWindow::on_addButton_clicked() {
     QString str = QInputDialog::getText(this, "Add point", "Enter x,y coordinates",
                                         QLineEdit::Normal, "", &ok);
     if (ok) {
+        size_t prevSize = figure.GetPoints().size();
         auto err = figure.AddPoint(str);
         if (err == Figure::Error::NO_ERROR) {
-            UpdateWidgets();
+            auto points = figure.GetPoints();
+            if (prevSize == points.size()) {
+                ui->pointsBrowser->moveCursor(QTextCursor::End);
+                ui->pointsBrowser->moveCursor(QTextCursor::Left, QTextCursor::KeepAnchor);
+                ui->pointsBrowser->moveCursor(QTextCursor::WordLeft, QTextCursor::KeepAnchor);
+                ui->pointsBrowser->moveCursor(QTextCursor::Left, QTextCursor::KeepAnchor);
+                ui->pointsBrowser->moveCursor(QTextCursor::Left, QTextCursor::KeepAnchor);
+                ui->pointsBrowser->moveCursor(QTextCursor::WordLeft, QTextCursor::KeepAnchor);
+                ui->pointsBrowser->moveCursor(QTextCursor::Left, QTextCursor::KeepAnchor);
+                ui->pointsBrowser->textCursor().removeSelectedText();
+                // ..., (x,y), (a, b)
+            }
+            else {
+                ui->pointsBrowser->moveCursor(QTextCursor::End);
+                if (points.size() > 1)
+                    ui->pointsBrowser->insertPlainText(", ");
+            }
+            ui->pointsBrowser->insertPlainText(QString("(%1, %2)").arg(points.back().x).arg(points.back().y));
+            figureFrame.DrawLastPoint();
         }
         else {
             _handleError(err);
@@ -118,5 +136,5 @@ void MainWindow::on_clearButton_clicked() {
     figure.Clear();
     ui->numOfPointsBrowser->clear();
     ui->pointsBrowser->clear();
-    figureFrame.update();
+    figureFrame.FullRedraw();
 }

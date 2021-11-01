@@ -25,8 +25,11 @@ public:
      * @param[in] figure pointer to the figure to be drawn
      */
     FigureFrame(const Figure* figure);
+    void FullRedraw();
+    void DrawLastPoint();
 private:
     const Figure* figure;
+    bool fullRedraw = false;
     /**
      * Draw figure
      * @param event event parameters (not used)
